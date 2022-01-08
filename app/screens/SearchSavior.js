@@ -10,13 +10,13 @@ import {TokenContext} from "../context/context";
 function SearchSavior(props) {
     const [search, setSearch] = useState("");
     const userInfo = React.useContext(TokenContext);
-    const url = 'http://192.168.0.90:8000/api/search/?search=' + search
+    const url = 'https://rescue-girls.online/api/search/?search=' + search
     const [result, setResult] = useState(null);
     const [saviorExist, setSaviorExist] = useState(false);
     const [saviorAdded, setSaviorAdded] = useState(false);
 
     const addSavior = async (username) => {
-        const addUrl = 'http://192.168.0.90:8000/api/add/';
+        const addUrl = 'https://rescue-girls.online/api/add/';
         await fetch(addUrl, {
             method: 'POST',
             headers: {

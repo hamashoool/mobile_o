@@ -22,7 +22,7 @@ const AlertsScreen = (props) => {
     const ws = useRef();
 
     const getAlerts = () => {
-        fetch('http://192.168.0.90:8000/api/get/alerts/', {
+        fetch('https://rescue-girls.online/api/get/alerts/', {
             method: 'GET',
             headers: {
                 Accept: 'application/json',
@@ -36,7 +36,7 @@ const AlertsScreen = (props) => {
     }
 
     const getLocation = async (alertId) => {
-        await fetch(`http://192.168.0.90:8000/api/get/location/${alertId}/`, {
+        await fetch(`https://rescue-girls.online/api/get/location/${alertId}/`, {
             method: 'GET',
             headers: {
                 Accept: 'application/json',
@@ -50,7 +50,7 @@ const AlertsScreen = (props) => {
     }
 
     const connectWS = (alertId) => {
-        ws.current = new WebSocket(`ws://192.168.0.90:8000/ws/alert/${alertId}/?token=${userInfo.token}`);
+        ws.current = new WebSocket(`wss://rescue-girls.online/ws/alert/${alertId}/?token=${userInfo.token}`);
 
         ws.current.onmessage = async (e) => {
             // a message was received

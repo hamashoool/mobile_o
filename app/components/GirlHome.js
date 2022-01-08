@@ -9,7 +9,8 @@ import {TokenContext} from "../context/context";
 import * as Updates from "expo-updates";
 
 const GirlHome = (props) => {
-    const delUrl = 'http://192.168.0.90:8000/api/delete/alert/';
+    const delUrl = 'https://rescue-girls.online/api/delete/alert/';
+    const notiTokenUrl = 'https://rescue-girls.online/api/get/notification/tokens/';
     const userInfo = useContext(TokenContext);
     const [live, setLive] = useState(false);
     const [subscriber, setSubscriber] = useState(null);
@@ -19,7 +20,7 @@ const GirlHome = (props) => {
     const updateAlert = () => {
 
         //create alert and return alert id, then save it.
-        fetch('http://192.168.0.90:8000/api/update/alert/', {
+        fetch('https://rescue-girls.online/api/update/alert/', {
             method: 'POST',
             headers: {
                 Accept: 'application/json',
@@ -38,9 +39,47 @@ const GirlHome = (props) => {
             });
     }
 
+    const notificationFunc = () => {
+
+        //create alert and return alert id, then save it.
+        fetch(notiTokenUrl, {
+            method: 'GET',
+            headers: {
+                Accept: 'application/json',
+                'Content-Type': 'application/json',
+                'Authorization': 'Token ' + userInfo.token
+            },
+        })
+            .then(response => response.json())
+            .then(data => {
+                Object.entries(data).map(item => {
+                    sendPushNotification(item[1])
+                })
+            });
+    }
+    async function sendPushNotification(expoPushToken) {
+        const message = {
+            to: expoPushToken,
+            sound: 'default',
+            title: 'Rescue Girls',
+            body: userInfo.name+" is in trouble.",
+            data: { alertId: alertId },
+        };
+
+        await fetch('https://exp.host/--/api/v2/push/send', {
+            method: 'POST',
+            headers: {
+                Accept: 'application/json',
+                'Accept-encoding': 'gzip, deflate',
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(message),
+        });
+    }
+
     const createAlert = () => {
         // create alert and return alert id, then save it.
-        fetch('http://192.168.0.90:8000/api/create/alert/', {
+        fetch('https://rescue-girls.online/api/create/alert/', {
             method: 'POST',
             headers: {
                 Accept: 'application/json',
@@ -58,7 +97,7 @@ const GirlHome = (props) => {
                 {
                     accuracy: Location.Accuracy.BestForNavigation,
                     timeInterval: 1000,
-                    distanceInterval: 1
+                    distanceInterval: 10
                 },
                 async location => {
                     // createLocation(location);
@@ -102,8 +141,9 @@ const GirlHome = (props) => {
     useEffect(() => {
         if (live) {
             if (alertId !== null) {
+                notificationFunc();
                 startWatching();
-                ws.current = new WebSocket(`ws://192.168.0.90:8000/ws/alert/${alertId}/${userInfo.username}/?token=${userInfo.token}`);
+                ws.current = new WebSocket(`wss://rescue-girls.online/ws/alert/${alertId}/${userInfo.username}/?token=${userInfo.token}`);
             } else {
                 createAlert();
             }

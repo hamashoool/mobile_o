@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {forwardRef, useImperativeHandle} from 'react';
 import {SafeAreaView, ScrollView, StyleSheet} from 'react-native';
 import {TokenContext} from "../context/context";
 import SaviorHome from "../components/SaviorHome";
@@ -6,6 +6,14 @@ import GirlHome from "../components/GirlHome";
 
 function HomeScreen(props) {
     const userInfo = React.useContext(TokenContext);
+    const navigation = props.navigation
+
+    let ref = props.route.params.ref
+
+    useImperativeHandle(ref, () => ({
+        // methods connected to `ref`
+        goToAlert: () => { navigation.navigate('View Alerts') }
+    }))
 
     return (
         <SafeAreaView style={styles.container}>
@@ -28,4 +36,4 @@ const styles = StyleSheet.create({
     },
 });
 
-export default HomeScreen;
+export default forwardRef(HomeScreen);

@@ -6,7 +6,7 @@ import {ContributionGraph, LineChart, PieChart, ProgressChart} from "react-nativ
 import styleSheet from "../styles/MainStyles";
 import {MaterialCommunityIcons} from "@expo/vector-icons";
 
-const SaviorHome = (props) => {
+const SaviorHome = (props, ref) => {
     const screenWidth = Dimensions.get("window").width;
     const data = {
         labels: ["January", "February", "March", "April", "May", "June"],

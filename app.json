@@ -5,6 +5,13 @@
     "version": "1.0.0",
     "orientation": "default",
     "icon": "./app/assets/logo.png",
+    "notification": {
+      "icon": "./app/assets/logo.png",
+      "color": "#ffffff",
+      "androidMode": "default",
+      "androidCollapsedTitle": "Updates from Colab.notes",
+      "iosDisplayInForeground": true
+    },
     "splash": {
       "image": "./app/assets/splash.png",
       "resizeMode": "contain",
@@ -23,23 +30,13 @@
       "package": "com.hamashool.rescue",
       "googleServicesFile": "./google-services.json",
       "adaptiveIcon": {
-        "foregroundImage": "./app/assets/adaptive-icon.png",
+        "foregroundImage": "./app/assets/logo.png",
         "backgroundColor": "#FFFFFF"
       }
     },
     "web": {
       "favicon": "./assets/favicon.png"
     },
-    "description": "",
-    "plugins": [
-      [
-        "expo-notifications",
-        {
-          "icon": "./local/assets/notification-icon.png",
-          "color": "#ffffff",
-          "sounds": ["./app/assets/notification.wav"]
-        }
-      ]
-    ]
+    "description": ""
   }
 }

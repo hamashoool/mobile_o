@@ -27,12 +27,13 @@ const Stack = createSharedElementStackNavigator();
 const Drawer = createDrawerNavigator();
 
 export default function App() {
+    const navigateNotification = useRef();
     const urls = {
-        registrationUrl: 'http://192.168.0.90:8000/api/registration/',
-        loginUrl: 'http://192.168.0.90:8000/api/login/',
-        apiUrl: 'http://192.168.0.90:8000/api/',
-        tokenUrl: 'http://192.168.0.90:8000/api/create/notification/token/',
-        search: 'http://192.168.0.90:8000/api/search/?search=osman'
+        registrationUrl: 'https://rescue-girls.online/api/registration/',
+        loginUrl: 'https://rescue-girls.online/api/login/',
+        apiUrl: 'https://rescue-girls.online/api/',
+        tokenUrl: 'https://rescue-girls.online/api/create/notification/token/',
+        search: 'https://rescue-girls.online/api/search/?search=osman'
     };
     let [fontLoaded, error] = useFonts({Playball_400Regular});
     const [loginValid, setLoginValid] = useState(true);
@@ -226,6 +227,10 @@ export default function App() {
         }
     };
 
+    const _handleNotificationResponse = response => {
+        navigateNotification.current.goToAlert();
+    };
+
     useEffect(async () => {
         let userToken = null; let userName = null; let email = null;
         let Name = null; let userType = null; let notiToken = null;
@@ -262,9 +267,7 @@ export default function App() {
             });
         }
         if (userType === 'savior') {
-            if (!notiToken) {
-                await registerForPushNotificationsAsync();
-            }
+            await registerForPushNotificationsAsync();
             Notifications.setNotificationHandler({
                 handleNotification: async () => ({
                     shouldShowAlert: true,
@@ -272,6 +275,7 @@ export default function App() {
                     shouldSetBadge: true,
                 }),
             });
+            Notifications.addNotificationResponseReceivedListener(_handleNotificationResponse);
         }
     }, [userInfo.token]);
 
@@ -325,7 +329,7 @@ export default function App() {
                                     name="home-outline"
                                     color={color}
                                     size={22}/>)
-                        }} name="Home" component={HomeScreen}/>
+                        }} name="Home" component={HomeScreen} initialParams={{ref:navigateNotification}}/>
 
                         <Drawer.Screen options={{
                             cardStyleInterpolator: CardStyleInterpolators.forHorizontalIOS,

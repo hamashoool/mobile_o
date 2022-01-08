@@ -21,7 +21,7 @@ const paddingItem = 10;
 const imgHeight = 100;
 const sizeOfItem = imgHeight + paddingItem * 2 + marginBottomItem;
 
-const BASE_URL = 'http://192.168.0.90:8000/api/';
+const BASE_URL = 'https://rescue-girls.online/api/';
 const APP_ID = '61bfb9fc0cf732c27692468d';
 
 function ViewContacts(props) {
@@ -33,7 +33,7 @@ function ViewContacts(props) {
     const [tempUser, setTempUser] = useState(null)
 
     const deleteContact = async (username) => {
-        const addUrl = 'http://192.168.0.90:8000/api/delete/';
+        const addUrl = 'https://rescue-girls.online/api/delete/';
         await fetch(addUrl, {
             method: 'POST',
             headers: {
