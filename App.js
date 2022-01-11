@@ -27,13 +27,16 @@ const Stack = createSharedElementStackNavigator();
 const Drawer = createDrawerNavigator();
 
 export default function App() {
+
+    // Variables
     const navigateNotification = useRef();
     const urls = {
         registrationUrl: 'https://rescue-girls.online/api/registration/',
         loginUrl: 'https://rescue-girls.online/api/login/',
         apiUrl: 'https://rescue-girls.online/api/',
         tokenUrl: 'https://rescue-girls.online/api/create/notification/token/',
-        search: 'https://rescue-girls.online/api/search/?search=osman'
+        search: 'https://rescue-girls.online/api/search/?search=osman',
+        dashboardUrl: 'https://rescue-girls.online/api/get/savior/dashboard/data/'
     };
     let [fontLoaded, error] = useFonts({Playball_400Regular});
     const [loginValid, setLoginValid] = useState(true);
@@ -41,6 +44,7 @@ export default function App() {
     const [regError, setRegError] = useState(null);
     let [userInfo, setUserInfo] = useState({
         name: null, token: null, email: null, userType: null, username: null,
+        alerts: null, contacts: null, alertCount: null
     });
     const data = {
         LoginCheck: loginValid, RegistrationCheck: registrationValid, RegError: regError,
@@ -54,6 +58,7 @@ export default function App() {
         }
     }
 
+    // Functions
     const loginReducer = (prevState, action) => {
         switch (action.type) {
             case 'RETRIEVE_TOKEN':
@@ -107,9 +112,7 @@ export default function App() {
                             });
                             setLoginValid(true);
                             dispatch({type: 'LOGIN', token: json.token});
-                        } catch (error) {
-                            console.log(error);
-                        }
+                        } catch (error) {}
                     }
                 })
                 .catch((error) => {
@@ -226,10 +229,33 @@ export default function App() {
             });
         }
     };
-
     const _handleNotificationResponse = response => {
         navigateNotification.current.goToAlert();
     };
+    const getGeneralData = async () => {
+        await fetch(urls.dashboardUrl, {
+            method: 'GET',
+            headers: {
+                Accept: 'application/json',
+                'Content-Type': 'application/json',
+                'Authorization': 'Token ' + userInfo.token
+            }
+        })
+            .then(response => response.json())
+            .then(json => {
+                console.log(json);
+                try {
+                    setUserInfo(prevState => {
+                        return {
+                            ...prevState,
+                            alerts: json.alerts,
+                            contacts: json.contacts,
+                            alertCount: json.alert_count
+                        };
+                    });
+                } catch (e) {}
+            })
+    }
 
     useEffect(async () => {
         let userToken = null; let userName = null; let email = null;
@@ -256,6 +282,7 @@ export default function App() {
         }
 
         dispatch({type: 'RETRIEVE_TOKEN', token: userToken});
+        await getGeneralData();
         if (userType === 'girl') {
             await Location.requestForegroundPermissionsAsync();
             Notifications.setNotificationHandler({

@@ -46,11 +46,11 @@ function DrawerContent (props) {
 
                         <View style={styles.row}>
                             <View style={styles.section}>
-                                <Paragraph style={[styles.paragraph, styles.caption]}>150</Paragraph>
+                                <Paragraph style={[styles.paragraph, styles.caption]}>{userInfo.alerts}</Paragraph>
                                 <Caption style={styles.caption}>Alerts</Caption>
                             </View>
                             <View style={styles.section}>
-                                <Paragraph style={[styles.paragraph, styles.caption]}>50</Paragraph>
+                                <Paragraph style={[styles.paragraph, styles.caption]}>{userInfo.contacts}</Paragraph>
                                 <Caption style={styles.caption}>Contacts</Caption>
                             </View>
                         </View>
