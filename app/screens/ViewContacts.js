@@ -96,7 +96,7 @@ function ViewContacts(props) {
                 <Image
                     style={styles.image}
                     // source={{uri: item.picture}}
-                    source={{uri: 'https://hamashool.com/static/images/1.png'}}
+                    source={require('../assets/logo.png')}
                     resizeMode='contain'
                     contentContainerStyle={{padding: 20}}
                 />

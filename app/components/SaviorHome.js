@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 
 import {Dimensions, Text, View} from 'react-native';
 import {myColors} from "../utilities/colors";
@@ -6,15 +6,25 @@ import {ContributionGraph, LineChart, PieChart, ProgressChart} from "react-nativ
 import styleSheet from "../styles/MainStyles";
 import {MaterialCommunityIcons} from "@expo/vector-icons";
 import {TokenContext} from "../context/context";
+import alerts from "../screens/Alerts";
+import * as SecureStore from "expo-secure-store";
 
-const SaviorHome = (props, ref) => {
+const SaviorHome = (props) => {
     const userInfo = React.useContext(TokenContext);
+    let a;
+    if (userInfo.alertCount === null){
+        a = [0,0,0,0,0,0,0,0,0,0,0,0]
+    } else {
+        a = userInfo.alertCount.split(',')
+    }
+
+    console.log('sav '+a)
     const screenWidth = Dimensions.get("window").width;
     const data1 = {
         labels: ["Ja", "Fb", "Mr", "Ap", "My", "Jn", "Jl", "Ag", "Sp", "Ot", "Nv", "Dc"],
         datasets: [
             {
-                data: userInfo.alertCount,
+                data: a,
                 color: (opacity = 1) => `rgba(219, 89, 42, ${opacity})`, // optional
                 strokeWidth: 2 // optional
             }

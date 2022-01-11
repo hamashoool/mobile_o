@@ -22,6 +22,7 @@ import * as Location from "expo-location";
 import * as Notifications from 'expo-notifications';
 import Constants from 'expo-constants';
 import {Platform} from "react-native";
+import AboutUs from "./app/screens/AboutUs";
 
 const Stack = createSharedElementStackNavigator();
 const Drawer = createDrawerNavigator();
@@ -44,13 +45,14 @@ export default function App() {
     const [regError, setRegError] = useState(null);
     let [userInfo, setUserInfo] = useState({
         name: null, token: null, email: null, userType: null, username: null,
-        alerts: null, contacts: null, alertCount: null
+        alerts: 0, contacts: 0,
+        alertCount: null,
     });
     const data = {
         LoginCheck: loginValid, RegistrationCheck: registrationValid, RegError: regError,
     };
     const initialLoginState = {
-        userToken: null,
+        userToken: null, alertCount: null, alerts: 0, contacts: 0,
     };
     const MyTheme = {
         ...DarkTheme, colors: {
@@ -232,34 +234,39 @@ export default function App() {
     const _handleNotificationResponse = response => {
         navigateNotification.current.goToAlert();
     };
-    const getGeneralData = async () => {
+    const getGeneralData = async (token) => {
         await fetch(urls.dashboardUrl, {
             method: 'GET',
             headers: {
                 Accept: 'application/json',
                 'Content-Type': 'application/json',
-                'Authorization': 'Token ' + userInfo.token
+                'Authorization': 'Token ' + token
             }
         })
             .then(response => response.json())
-            .then(json => {
-                console.log(json);
+            .then(async json => {
+                // console.log(json.alerts);
                 try {
-                    setUserInfo(prevState => {
+                    await SecureStore.setItemAsync('alerts', json.alerts.toString());
+                    await SecureStore.setItemAsync('contacts', json.contacts.toString());
+                    await SecureStore.setItemAsync('alertCount', json.alert_count.toString());
+                    await setUserInfo( prevState => {
                         return {
                             ...prevState,
-                            alerts: json.alerts,
-                            contacts: json.contacts,
-                            alertCount: json.alert_count
+                            alerts: json.alerts.toString(),
+                            contacts: json.contacts.toString(),
+                            alertCount: json.alert_count.toString()
                         };
                     });
-                } catch (e) {}
+                } catch (e) {
+                }
             })
     }
 
     useEffect(async () => {
         let userToken = null; let userName = null; let email = null;
         let Name = null; let userType = null; let notiToken = null;
+        let alerts = 0; let contacts = 0; let alertCount = null;
 
         try {
             userToken = await SecureStore.getItemAsync('userToken');
@@ -268,21 +275,44 @@ export default function App() {
             Name = await SecureStore.getItemAsync('Name');
             userType = await SecureStore.getItemAsync('userType');
             notiToken = await SecureStore.getItemAsync('notiToken');
-            setUserInfo(prevState => {
-                return {
-                    ...prevState, name: Name,
-                    token: userToken,
-                    email: email,
-                    username: userName,
-                    userType: userType, // girl or savior
-                };
-            });
+            alerts = await SecureStore.getItemAsync('alerts');
+            contacts = await SecureStore.getItemAsync('contacts');
+            alertCount = await SecureStore.getItemAsync('alertCount');
+            console.log('here '+alertCount)
+            if (alertCount !== null) {
+                setUserInfo(prevState => {
+                    return {
+                        ...prevState, name: Name,
+                        token: userToken,
+                        email: email,
+                        username: userName,
+                        userType: userType, // girl or savior
+                        alerts: alerts,
+                        contacts: contacts,
+                        alertCount: alertCount,
+                    };
+                });
+            } else {
+                setUserInfo(prevState => {
+                    return {
+                        ...prevState, name: Name,
+                        token: userToken,
+                        email: email,
+                        username: userName,
+                        userType: userType, // girl or savior
+                    };
+                });
+            }
         } catch (error) {
-            console.log(error);
+            console.log("error");
         }
 
         dispatch({type: 'RETRIEVE_TOKEN', token: userToken});
-        await getGeneralData();
+
+        if (userToken !== null){
+            await getGeneralData(userToken);
+        }
+
         if (userType === 'girl') {
             await Location.requestForegroundPermissionsAsync();
             Notifications.setNotificationHandler({
@@ -304,7 +334,7 @@ export default function App() {
             });
             Notifications.addNotificationResponseReceivedListener(_handleNotificationResponse);
         }
-    }, [userInfo.token]);
+    }, [userInfo.token,]);
 
     if (!fontLoaded) {
         return <AppLoadingPlaceholder/>
@@ -379,6 +409,15 @@ export default function App() {
                                     color={color}
                                     size={22}/>)
                         }} name="Add Savior" component={SearchSavior}/>}
+
+                        <Drawer.Screen options={{
+                            cardStyleInterpolator: CardStyleInterpolators.forHorizontalIOS,
+                            drawerIcon: ({color}) => (<MaterialCommunityIcon
+                                name="information-outline"
+                                color={color}
+                                size={22}/>)
+                        }} name="About Us" component={AboutUs}/>
+
                     </Drawer.Navigator>
                 </NavigationContainer>
             </TokenContext.Provider>}

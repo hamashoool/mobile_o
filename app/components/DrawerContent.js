@@ -32,9 +32,7 @@ function DrawerContent (props) {
                         />
                         <View style={{flexDirection:'row',marginTop: 15}}>
                             <Avatar.Image
-                                source={{
-                                    uri: 'https://hamashool.com/static/images/1.png'
-                                }}
+                                source={require('../assets/logo.png')}
                                 size={60}
                                 style={{backgroundColor: 'rgba(255,255,255,0)'}}
                             />
