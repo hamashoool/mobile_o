@@ -3,7 +3,7 @@ import WelcomeScreen from "./app/screens/WelcomeScreen";
 import {DarkTheme, NavigationContainer} from '@react-navigation/native';
 import LoginScreen from "./app/screens/LoginScreen";
 import {Playball_400Regular, useFonts} from "@expo-google-fonts/playball";
-import AppLoadingPlaceholder from "expo/build/launch/AppLoadingPlaceholder";
+// import AppLoadingPlaceholder from "expo/build/launch/AppLoadingPlaceholder";
 import RegistrationScreenOne, {RegistrationScreenThree, RegistrationScreenTwo} from "./app/screens/RegistrationScreen";
 import {createSharedElementStackNavigator} from "react-navigation-shared-element";
 import {CardStyleInterpolators} from '@react-navigation/stack';
@@ -21,7 +21,7 @@ import * as SecureStore from "expo-secure-store";
 import * as Location from "expo-location";
 import * as Notifications from 'expo-notifications';
 import Constants from 'expo-constants';
-import {Platform} from "react-native";
+import {ActivityIndicator, Platform} from "react-native";
 import AboutUs from "./app/screens/AboutUs";
 
 const Stack = createSharedElementStackNavigator();
@@ -337,7 +337,7 @@ export default function App() {
     }, [userInfo.token,]);
 
     if (!fontLoaded) {
-        return <AppLoadingPlaceholder/>
+        return <ActivityIndicator/>
     }
     return (// <LocationProvider>
         <AuthContext.Provider value={authContext}>

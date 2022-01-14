@@ -7,7 +7,7 @@
     "icon": "./app/assets/logo.png",
     "notification": {
       "icon": "./app/assets/logo.png",
-      "color": "#ffffff",
+      "color": "#00885D",
       "androidMode": "default",
       "androidCollapsedTitle": "Rescue Girls",
       "iosDisplayInForeground": true
@@ -37,6 +37,7 @@
     "web": {
       "favicon": "./assets/favicon.png"
     },
-    "description": ""
+    "description": "As we all know that girls have been facing a lot of sexual\nharassments in our country and when in danger, girls find it difficult\nto reach out to their close ones and ask for help. \n\n To minimize this difficulty, we are introducing this app where\nevery girl will sign up and add up to 5 contacts of their close ones whom\n they can trust for immediate help. And just by only pressing “Rescue Me” button,\nit will immediately send the exact location of the girl, directly to her added contacts.",
+    "githubUrl": "https://github.com/hamashoool/mobile_o"
   }
 }

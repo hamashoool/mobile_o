@@ -192,7 +192,8 @@ const AlertsScreen = (props) => {
                             <FlatList
                                 data={alertData}
                                 renderItem={renderItem}
-                                keyExtractor={item => item.id}
+                                // keyExtractor={item => item.id}
+                                keyExtractor={(item, index) => 'item'+index}
                                 refreshControl={
                                     <RefreshControl refreshing={isLoading} onRefresh={getAlerts}/>
                                 }
