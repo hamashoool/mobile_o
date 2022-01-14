@@ -14,12 +14,11 @@ import {AuthContext, TokenContext} from "../context/context";
 import * as Animatable from 'react-native-animatable';
 
 const AlertsScreen = (props) => {
+    const navigation = props.navigation
     const userInfo = React.useContext(TokenContext);
     const [alertData, setAlertData] = useState(null);
-    const [mapRegion, setMapRegion] = useState(null);
-    const [mapControl, setMapControl] = useState(false);
     const [isLoading, setIsloading] = useState(false);
-    const ws = useRef();
+
 
     const getAlerts = () => {
         fetch('https://rescue-girls.online/api/get/alerts/', {
@@ -35,62 +34,8 @@ const AlertsScreen = (props) => {
             .finally(() => setIsloading(false));
     }
 
-    const getLocation = async (alertId) => {
-        await fetch(`https://rescue-girls.online/api/get/location/${alertId}/`, {
-            method: 'GET',
-            headers: {
-                Accept: 'application/json',
-                'Content-Type': 'application/json',
-                'Authorization': 'Token ' + userInfo.token
-            }
-        })
-            .then(response => response.json())
-            .then(data => setMapRegion(data));
-        console.log(mapRegion);
-    }
-
-    const connectWS = (alertId) => {
-        ws.current = new WebSocket(`wss://rescue-girls.online/ws/alert/${alertId}/?token=${userInfo.token}`);
-
-        ws.current.onmessage = async (e) => {
-            // a message was received
-            const dataObj = JSON.parse(e.data)
-            if (dataObj.action){
-                await setMapRegion(prevState => ({
-                    ...prevState,
-                    status: 'false'
-                }));
-                await console.log('map',mapRegion)
-            }else{
-                await setMapRegion(dataObj)
-            }
-
-            if (dataObj.latitude !== null) {
-                await setMapControl(true)
-            }
-
-            console.log('message', dataObj);
-        };
-        ws.current.onopen = (e) => {
-            // a message was received
-            console.log('open', e);
-            // ws.send(JSON.stringify({msg: 'From savior'}))
-        };
-        ws.current.onerror = (e) => {
-            // a message was received
-            console.log('error', e);
-        };
-        ws.current.onclose = (e) => {
-            // a message was received
-            console.log('close', e);
-        };
-    }
-
     const Item = ({name, date, live, alertId}) => (
-        <TouchableOpacity style={styles.item} onPress={() => {
-            // getLocation(alertId)
-            connectWS(alertId)
-        }}>
+        <TouchableOpacity style={styles.item} onPress={() => [navigation.navigate('Map Screen', {alertId})]}>
             <Text style={[styles.title, {textAlign: 'center', fontWeight: 'bold', paddingBottom: 5,}]}>
                 {name}</Text>
             <View style={styleSheet.Inline}>
@@ -128,78 +73,18 @@ const AlertsScreen = (props) => {
 
     return (
         <SafeAreaView style={styles.container}>
-            {mapControl ?
-                <View style={{flex: 1}}>
-                    <MapView
-                        style={{ flex: 3}}
-                        region={{
-                            latitude: mapRegion.latitude,
-                            longitude: mapRegion.longitude,
-                            latitudeDelta: mapRegion.latitudeDelta,
-                            longitudeDelta: mapRegion.longitudeDelta
-                        }}
-                    >
-                        <Marker
-                            coordinate={{
-                                latitude: mapRegion.latitude,
-                                longitude: mapRegion.longitude,
-                                latitudeDelta: mapRegion.latitudeDelta,
-                                longitudeDelta: mapRegion.longitudeDelta
-                            }}
-                            title='Marker'
-                            pinColor={'#ff4b00'}
-                        />
-                        <Circle
-                            center={{
-                                latitude: mapRegion.latitude,
-                                longitude: mapRegion.longitude,
-                                latitudeDelta: mapRegion.latitudeDelta,
-                                longitudeDelta: mapRegion.longitudeDelta
-                            }}
-                            radius={40}
-                            strokeColor={'rgb(0,136,93)'}
-                            fillColor={'rgba(0,136,93,0.2)'}
-                        />
-                    </MapView>
-                    <View style={{padding: 10, flex: 1}}>
-                        <Text style={{fontSize: 30, color:myColors.white}}>{mapRegion.name}</Text>
-                        <Text style={{fontSize: 20, color:myColors.white}}>{mapRegion.date}</Text>
-                        { mapRegion.status === 'true' ?
-                            <Animatable.Text animation="fadeIn" easing="ease-in-out" iterationCount="infinite"
-                                style={{fontSize: 30, color:'#22ff00'}}>Live</Animatable.Text>
-                            :
-                            <Text style={{fontSize: 30, color:myColors.white}}>Offline</Text>
-                        }
-                    </View>
-                    <ActionButton
-                        buttonColor={myColors.secondColor}
-                        onPress={() => {
-                            setMapControl(false);
-                            ws.current.close();
-                            getAlerts();
-                        }}
-                        renderIcon={active => active ? (
-                            <MaterialCommunityIcon name="close-thick" color={myColors.white} size={30}/>) : (
-                            <MaterialCommunityIcon name="close-thick" color={myColors.white} size={30}/>)}
-                    >
-
-                    </ActionButton>
-                </View>
-                : [
-                    (isLoading ?
-                            <ActivityIndicator/>
-                            :
-                            <FlatList
-                                data={alertData}
-                                renderItem={renderItem}
-                                // keyExtractor={item => item.id}
-                                keyExtractor={(item, index) => 'item'+index}
-                                refreshControl={
-                                    <RefreshControl refreshing={isLoading} onRefresh={getAlerts}/>
-                                }
-                            />
-                    )
-                ]
+            {isLoading ?
+                <ActivityIndicator/>
+                :
+                <FlatList
+                    data={alertData}
+                    renderItem={renderItem}
+                    // keyExtractor={item => item.id}
+                    keyExtractor={(item, index) => 'item' + index}
+                    refreshControl={
+                        <RefreshControl refreshing={isLoading} onRefresh={getAlerts}/>
+                    }
+                />
             }
         </SafeAreaView>
     );

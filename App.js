@@ -15,7 +15,6 @@ import ViewContacts from "./app/screens/ViewContacts";
 import DrawerContent from "./app/components/DrawerContent";
 import MaterialCommunityIcon from "react-native-paper/src/components/MaterialCommunityIcon";
 import {MaterialCommunityIcons} from "@expo/vector-icons";
-import AlertsScreen from "./app/screens/Alerts";
 import {myColors} from "./app/utilities/colors";
 import * as SecureStore from "expo-secure-store";
 import * as Location from "expo-location";
@@ -23,6 +22,7 @@ import * as Notifications from 'expo-notifications';
 import Constants from 'expo-constants';
 import {ActivityIndicator, Platform} from "react-native";
 import AboutUs from "./app/screens/AboutUs";
+import AlertContainerScreen from "./app/screens/AlertContainer";
 
 const Stack = createSharedElementStackNavigator();
 const Drawer = createDrawerNavigator();
@@ -402,7 +402,7 @@ export default function App() {
                                     name="eye-outline"
                                     color={color}
                                     size={22}/>)
-                        }} name="View Alerts" component={AlertsScreen}/> : <Drawer.Screen options={{
+                        }} name="View Alerts" component={AlertContainerScreen}/> : <Drawer.Screen options={{
                             cardStyleInterpolator: CardStyleInterpolators.forHorizontalIOS,
                             drawerIcon: ({color}) => (<MaterialCommunityIcon
                                     name="account-plus-outline"
