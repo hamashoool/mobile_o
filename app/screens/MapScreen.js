@@ -1,6 +1,6 @@
 import React, {useEffect, useRef, useState} from 'react';
 
-import {Alert, Text, View} from 'react-native';
+import {Alert, Button, Text, View} from 'react-native';
 import {TokenContext} from "../context/context";
 import MapView, {Circle, Marker} from "react-native-maps";
 import {myColors} from "../utilities/colors";
@@ -31,7 +31,6 @@ const MapScreen = (props) => {
             .catch(err => console.log(err));
         // console.log(mapRegion);
     }
-
     const connectWS = () => {
         ws.current = new WebSocket(`wss://rescue-girls.online/ws/alert/${alertId}/?token=${userInfo.token}`);
 
@@ -85,7 +84,6 @@ const MapScreen = (props) => {
 
     }, []);
 
-
     if (isLoading){
         return <LoadingComponent/>
     }
@@ -123,6 +121,14 @@ const MapScreen = (props) => {
                 />
             </MapView>
             <View style={{padding: 10, flex: 1}}>
+            <Button
+                title="Close"
+                color="#DB592A"
+                onPress={ () => {
+                    navigation.navigate('Alert Component');
+                    ws.current.close();
+                }}
+            />
                 <Text style={{fontSize: 30, color:myColors.white}}>{mapRegion.name}</Text>
                 <Text style={{fontSize: 20, color:myColors.white}}>{mapRegion.date}</Text>
                 { mapRegion.status === 'true' ?
@@ -132,18 +138,6 @@ const MapScreen = (props) => {
                     <Text style={{fontSize: 30, color:myColors.white}}>Offline</Text>
                 }
             </View>
-            <ActionButton
-                buttonColor={myColors.secondColor}
-                onPress={() => {
-                    navigation.navigate('Alert Component');
-                    ws.current.close();
-                }}
-                renderIcon={active => active ? (
-                    <MaterialCommunityIcon name="close-thick" color={myColors.white} size={30}/>) : (
-                    <MaterialCommunityIcon name="close-thick" color={myColors.white} size={30}/>)}
-            >
-
-            </ActionButton>
         </View>
     );
 };

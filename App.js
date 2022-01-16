@@ -231,9 +231,6 @@ export default function App() {
             });
         }
     };
-    const _handleNotificationResponse = response => {
-        navigateNotification.current.goToAlert();
-    };
     const getGeneralData = async (token) => {
         await fetch(urls.dashboardUrl, {
             method: 'GET',
@@ -332,7 +329,6 @@ export default function App() {
                     shouldSetBadge: true,
                 }),
             });
-            Notifications.addNotificationResponseReceivedListener(_handleNotificationResponse);
         }
     }, [userInfo.token,]);
 
